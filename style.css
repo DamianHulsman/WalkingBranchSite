@@ -1,0 +1,70 @@
+* {
+    background-color: black;
+    color: white;
+    transition: 0.3s;
+}
+
+.flex {
+    display: flex;
+}
+
+.nav {
+    background-color: #414446;
+}
+
+.navitem {
+    height: 40px;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: solid 3px aqua;
+}
+
+.navitem:hover {
+    background-color: #545454;
+}
+
+.planning {
+    border: 4px groove blue;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 10px;
+    padding: 10px !important;
+}
+
+.delbutton {
+    border: 2px groove rgb(101, 1, 1);
+}
+
+.delbutton:hover {
+    border: 2px groove red;
+    color: red;
+    cursor: pointer;
+}
+
+.editbutton {
+    border: 2px groove #009191;
+}
+
+.editbutton:hover {
+    border: 2px groove #0ff;
+    color: #0ff;
+    cursor: pointer;
+}
+
+.addbutton {
+    border: 2px groove rgb(11, 85, 11);
+}
+
+.addbutton:hover {
+    border: 2px groove #0f0;
+    color: #0f0;
+    cursor: pointer;
+}
+
+.tableitem {
+    border-top: 1px solid #00f;
+    border-bottom: 1px solid #00f;
+    border-collapse: collapse;
+    border-radius: 15px;
+}
