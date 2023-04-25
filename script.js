@@ -1,9 +1,11 @@
 let planningarray;
-$.getJSON('http://localhost/WalkingBranchAPI/server.php?fn=getPlanning', function (planning) {
-    console.log(planning);
-    planningarray = planning;
-    setPlanning(planning);
-});
+function getTable() {
+    $.getJSON('http://localhost/WalkingBranchAPI/server.php?fn=getPlanning', function (planning) {
+        console.log(planning);
+        planningarray = planning;
+        setPlanning(planning);
+    });
+}
 function setPlanning(planning) {
     let table = `
     <tr class="tableheader">
@@ -31,11 +33,24 @@ function setPlanning(planning) {
     </tr>`;
 
     planning.forEach(el => {
-        const disabledAttr = el.disabled ? 'disabled ' : 'class="editbutton""'; // Add the disabled attribute if the disabled property is true
-        table += `<tr class="tablerow" id="e${el.id}"><td class="tableitem"><button class="delbutton" title="Verwijder deze opkomst" onclick="delitem(${el.id})">Delete</button><button title="Bewerk deze opkomst" onclick="edititem(${el.id})" ${disabledAttr}>Edit</button></td><td class="tableitem">${el.date}</td><td class="tableitem">${el.organisatie}</td><td class="tableitem">${el.activity}</td><td class="tableitem">€${el.cost}</td><td class="tableitem">${el.notes}</td><td class="tableitem">${el.disabled}</td></tr>`;
+        const disabledAttr = el.disabled ? 'disabled ' : 'class="editbutton"'; // Add the disabled attribute if the disabled property is true
+        table += 
+        `
+        <tr class="tablerow" id="e${el.id}">
+            <td class="tableitem">
+                <button class="delbutton" title="Verwijder deze opkomst" onclick="delitem(${el.id})">Delete</button>
+                <button title="Bewerk deze opkomst" onclick="edititem(${el.id})" ${disabledAttr}>Edit</button>
+            </td>
+            <td class="tableitem">${el.date}</td>
+            <td class="tableitem">${el.organisatie}</td>
+            <td class="tableitem">${el.activity}</td>
+            <td class="tableitem">€${el.cost}</td>
+            <td class="tableitem">${el.notes}</td>
+            <td class="tableitem">${el.disabled}</td>
+        </tr>`;
     });
 
-    table += `<tr class="tablerow"><td class="tableitem"><button class="addbutton" onclick="additem()">Toevoegen:</button></td><td class="tableitem"><input type="text" id="aDate" placeholder="Datum: x-xx-2023" required></td><td class="tableitem"><input type="text" id="aOrganisatie" placeholder="Organisatie"></td><td class="tableitem"><input type="text" id=aActivity placeholder="Activiteit" required></td><td class="tableitem"><input type="number" id=aCost placeholder="Kost" value=0 style="width: 50px;" required></td><td class="tableitem"><input type="text" id=aNotes placeholder="Notities" required></td><td class="tableitem">Disabled: <input type="checkbox" id=aDisabled required></td></tr>`;
+    table += `<tr class="tablerow"><td class="tableitem"><button class="addbutton" onclick="additem()">Toevoegen:</button></td><td class="tableitem"><input type="text" id="aDate" placeholder="Datum: x-xx-2023" required></td><td class="tableitem"><input type="text" id="aOrganisatie" placeholder="Organisatie"></td><td class="tableitem"><input type="text" id=aActivity placeholder="Activiteit" required></td><td class="tableitem"><input type="number" id=aCost placeholder="Kost" value=0 style="width: 50px;" required></td><td class="tableitem"><input type="text" id=aNotes placeholder="Notities"></td><td class="tableitem">Disabled: <input type="checkbox" id=aDisabled required></td></tr>`;
 
     if (document.getElementById('planning')) {
         document.getElementById('planning').innerHTML = table;
@@ -68,7 +83,7 @@ function additem() {
         } else {
             dis = true;
         }
-        if (date !== '' && organisatie !== '' && activity !== '') {
+        if (date !== '' && organisatie !== '' && activity !== '' && cost !== '') {
             $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=addItem&id=${id}&date=${date}&organisatie=${organisatie}&activity=${activity}&cost=${cost}&notes=${notes}&disabled=${dis}`, function (result) {
                 console.log(result);
             });
@@ -162,9 +177,22 @@ function cancelEdit() {
 }
 
 
-function login() {
-    const username = prompt("Username: ", '');
-    const password = prompt("Password: ", '');
+async function login() {
+    let username = document.getElementById('username').value;
+    let password = document.getElementById('password').value;
+    const url = 'http://localhost/walkingBranchAPI/server.php?fn=login&username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
+    await $.getJSON(url, function (result) {
+        console.log(result);
+        if(result.success === true) {
+            getTable();
+            document.getElementById('loginform').innerHTML = ``;
+            document.getElementById('nav').innerHTML += `<button class="navitem" onclick="logout()">Log uit</button>`;
+        } else {
+            alert('Invalid username/password!');
+        }
+    });
+}
 
-    console.log(`Username: ${JSON.stringify(username)}\nPassword: ${JSON.stringify(password)}`);
+function logout() {
+
 }
