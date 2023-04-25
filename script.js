@@ -5,7 +5,30 @@ $.getJSON('http://localhost/WalkingBranchAPI/server.php?fn=getPlanning', functio
     setPlanning(planning);
 });
 function setPlanning(planning) {
-    let table = `<tr class="tableheader"><td class="tableitem"><b>Delete/Edit</b></td><td class="tableitem"><b>Datum</b></td><td class="tableitem"><b>Organisatie</b></td><td class="tableitem"><b>Activiteit</b></td><td class="tableitem"><b>Kosten</b></td><td class="tableitem"><b>Notities</b></td><td class="tableitem"><b>Disabled</b></td></tr>`;
+    let table = `
+    <tr class="tableheader">
+        <td class="tableitem">
+            <b>Delete/Edit</b>
+        </td>
+        <td class="tableitem">
+            <b>Datum</b>
+        </td>
+        <td class="tableitem">
+            <b>Organisatie</b>
+        </td>
+        <td class="tableitem">
+            <b>Activiteit</b>
+        </td>
+        <td class="tableitem">
+            <b>Kosten</b>
+        </td>
+        <td class="tableitem">
+            <b>Notities</b>
+        </td>
+        <td class="tableitem">
+            <b>Disabled</b>
+        </td>
+    </tr>`;
 
     planning.forEach(el => {
         const disabledAttr = el.disabled ? 'disabled ' : 'class="editbutton""'; // Add the disabled attribute if the disabled property is true
@@ -40,7 +63,7 @@ function additem() {
         const cost = document.getElementById('aCost').value;
         const notes = document.getElementById('aNotes').value;
         let dis;
-        if(document.getElementById('aDisabled').value == true){
+        if (document.getElementById('aDisabled').value == true) {
             dis = false;
         } else {
             dis = true;
@@ -100,7 +123,7 @@ function edititem(id) {
 }
 
 function saveitem(id) {
-    const itemIndex = planningarray.findIndex(item => item.id ===    id);
+    const itemIndex = planningarray.findIndex(item => item.id === id);
     if (itemIndex === -1) {
         console.log(`Item with id ${id} not found.`);
         return;
