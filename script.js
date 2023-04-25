@@ -149,7 +149,13 @@ function saveitem(id) {
     const activity = document.getElementById('eActivity').value;
     const cost = document.getElementById('eCost').value;
     const notes = document.getElementById('eNotes').value;
-    const disabled = document.getElementById('eDisabled').checked;
+    let disabled = document.getElementById('eDisabled').checked;
+
+    if(disabled === true) {
+        disabled = 0;
+    } else {
+        disabled = 1;
+    }
 
     if (date !== '' && activity !== '' && organisatie !== '') {
         const updatedItem = {
@@ -186,7 +192,7 @@ async function login() {
         if(result.success === true) {
             getTable();
             document.getElementById('loginform').innerHTML = ``;
-            document.getElementById('nav').innerHTML += `<button class="navitem" onclick="logout()">Log uit</button>`;
+            document.getElementById('nav').innerHTML += `<button class="navitem" id="logout" onclick="logout()">Log uit</button>`;
         } else {
             alert('Invalid username/password!');
         }
@@ -194,5 +200,17 @@ async function login() {
 }
 
 function logout() {
-
+    document.getElementById('planning').innerHTML = '';
+    document.getElementById('logout').innerHTML = `<div id="loginform" class="loginform">
+    <form>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        
+        
+    </form>
+    <button onclick="login()">Login</button>
+    </div>`;
 }
