@@ -149,13 +149,7 @@ function saveitem(id) {
     const activity = document.getElementById('eActivity').value;
     const cost = document.getElementById('eCost').value;
     const notes = document.getElementById('eNotes').value;
-    let disabled = document.getElementById('eDisabled').checked;
-
-    if(disabled === true) {
-        disabled = 0;
-    } else {
-        disabled = 1;
-    }
+    const disabled = document.getElementById('eDisabled').checked;
 
     if (date !== '' && activity !== '' && organisatie !== '') {
         const updatedItem = {
