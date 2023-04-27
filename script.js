@@ -18,20 +18,20 @@ function setPlanning(planning, role) {
         <td class="tableitem">
             <b>Organisatie</b>
         </td>
-        <td class="tableitem">
+        <td class="tableitem notes">
             <b>Activiteit</b>
         </td>
         <td class="tableitem">
             <b>Kosten</b>
         </td>
-        <td class="tableitem">
+        <td class="tableitem notes">
             <b>Notities</b>
         </td>
         <td class="tableitem">
             <b>Disabled</b>
         </td>
     </tr>`;
-    if(role !== 'admin') {
+    if(role === 'peasant') {
         planning.forEach(el => {
             const disabledAttr = el.disabled ? 'disabled class="diseditbutton"' : 'class="editbutton"'; // Add the disabled attribute if the disabled property is true
             table += 
@@ -49,7 +49,7 @@ function setPlanning(planning, role) {
                 <td class="tableitem">${el.disabled}</td>
             </tr>`;
         });
-    } else {
+    } else if(role === 'admin') {
         planning.forEach(el => {
             table += 
             `
@@ -66,6 +66,9 @@ function setPlanning(planning, role) {
                 <td class="tableitem">${el.disabled}</td>
             </tr>`;
         });
+    } else {
+        alert('Je moet eerst inloggen!');
+        return;
     }
 
     table += `<tr class="tablerow"><td class="tableitem"><button class="addbutton" onclick="additem()">Toevoegen:</button></td><td class="tableitem"><input type="text" class="addform" id="aDate" placeholder="Datum: x-xx-2023" required></td><td class="tableitem"><input type="text" class="addform" id="aOrganisatie" placeholder="Organisatie" required></td><td class="tableitem"><input type="text" class="addform" id=aActivity placeholder="Activiteit" required></td><td class="tableitem"><input type="number" class="addform" id=aCost placeholder="Kost" value=0 style="width: 50px;" required></td><td class="tableitem"><input type="text" class="addform" id=aNotes placeholder="Notities"></td><td class="tableitem">Disabled: <input type="checkbox" id=aDisabled required></td></tr>`;
@@ -105,7 +108,7 @@ function additem() {
             $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=addItem&id=${id}&date=${date}&organisatie=${organisatie}&activity=${activity}&cost=${cost}&notes=${notes}&disabled=${dis}`, function (result) {
                 console.log(result);
             });
-            document.location.reload();
+            // document.location.reload();
         } else {
             alert('Vul alle velden in!');
             document.getElementById('aDate').style.border = '2px solid red';
