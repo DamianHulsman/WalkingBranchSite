@@ -17,7 +17,7 @@
     border-radius: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
-    margin-left: 10px;
+    margin-left: 10px;  
     border: solid 3px aqua;
 }
 
@@ -34,31 +34,72 @@
 }
 
 .delbutton {
-    border: 2px groove rgb(101, 1, 1);
+    border: 2px solid rgb(101, 1, 1);
+    border-radius: 10px;
+    height: 38px;
+    width: 60px;
 }
 
 .delbutton:hover {
-    border: 2px groove red;
+    border: 2px solid red;
+    color: red;
+    cursor: pointer;
+}
+
+.cancelbutton {
+    border: 2px solid rgb(101, 1, 1);
+    border-radius: 10px;
+    height: 38px;
+    width: 100px;
+}
+
+.cancelbutton:hover {
+    border: 2px solid red;
     color: red;
     cursor: pointer;
 }
 
 .editbutton {
-    border: 2px groove #009191;
+    border: 2px solid #009191;
+    border-radius: 10px;
+    height: 38px;
+    width: 60px;
+}
+
+.diseditbutton {
+    border-radius: 10px;
+    height: 38px;
+    width: 60px;
 }
 
 .editbutton:hover {
-    border: 2px groove #0ff;
+    border: 2px solid #0ff;
     color: #0ff;
     cursor: pointer;
 }
 
 .addbutton {
-    border: 2px groove rgb(11, 85, 11);
+    border: 2px solid rgb(11, 85, 11);
+    height: 38px;
+    width: 100px;
+    border-radius: 10px;
 }
 
 .addbutton:hover {
-    border: 2px groove #0f0;
+    border: 2px solid #0f0;
+    color: #0f0;
+    cursor: pointer;
+}
+
+.savebutton {
+    border: 2px solid rgb(11, 85, 11);
+    height: 38px;
+    width: 70px;
+    border-radius: 10px;
+}
+
+.savebutton:hover {
+    border: 2px solid #0f0;
     color: #0f0;
     cursor: pointer;
 }
@@ -68,4 +109,15 @@
     border-bottom: 1px solid #00f;
     border-collapse: collapse;
     border-radius: 15px;
+    height: 40px;
+}
+
+.addform {
+    height: 38px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.addform:hover {
+    border: 2px solid white;
 }

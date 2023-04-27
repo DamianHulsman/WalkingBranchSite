@@ -1,12 +1,12 @@
 let planningarray;
-function getTable() {
+function getTable(role) {
     $.getJSON('http://localhost/WalkingBranchAPI/server.php?fn=getPlanning', function (planning) {
         console.log(planning);
         planningarray = planning;
-        setPlanning(planning);
+        setPlanning(planning, role);
     });
 }
-function setPlanning(planning) {
+function setPlanning(planning, role) {
     let table = `
     <tr class="tableheader">
         <td class="tableitem">
@@ -31,26 +31,44 @@ function setPlanning(planning) {
             <b>Disabled</b>
         </td>
     </tr>`;
+    if(role !== 'admin') {
+        planning.forEach(el => {
+            const disabledAttr = el.disabled ? 'disabled class="diseditbutton"' : 'class="editbutton"'; // Add the disabled attribute if the disabled property is true
+            table += 
+            `
+            <tr class="tablerow" id="e${el.id}">
+                <td class="tableitem">
+                    <button class="delbutton" title="Verwijder deze opkomst" onclick="delitem(${el.id})">Delete</button>
+                    <button title="Bewerk deze opkomst" onclick="edititem(${el.id})" ${disabledAttr}>Edit</button>
+                </td>
+                <td class="tableitem">${el.date}</td>
+                <td class="tableitem">${el.organisatie}</td>
+                <td class="tableitem">${el.activity}</td>
+                <td class="tableitem">€${el.cost}</td>
+                <td class="tableitem">${el.notes}</td>
+                <td class="tableitem">${el.disabled}</td>
+            </tr>`;
+        });
+    } else {
+        planning.forEach(el => {
+            table += 
+            `
+            <tr class="tablerow" id="e${el.id}">
+                <td class="tableitem">
+                    <button class="delbutton" title="Verwijder deze opkomst" onclick="delitem(${el.id})">Delete</button>
+                    <button title="Bewerk deze opkomst" onclick="edititem(${el.id})" class="editbutton">Edit</button>
+                </td>
+                <td class="tableitem">${el.date}</td>
+                <td class="tableitem">${el.organisatie}</td>
+                <td class="tableitem">${el.activity}</td>
+                <td class="tableitem">€${el.cost}</td>
+                <td class="tableitem">${el.notes}</td>
+                <td class="tableitem">${el.disabled}</td>
+            </tr>`;
+        });
+    }
 
-    planning.forEach(el => {
-        const disabledAttr = el.disabled ? 'disabled ' : 'class="editbutton"'; // Add the disabled attribute if the disabled property is true
-        table += 
-        `
-        <tr class="tablerow" id="e${el.id}">
-            <td class="tableitem">
-                <button class="delbutton" title="Verwijder deze opkomst" onclick="delitem(${el.id})">Delete</button>
-                <button title="Bewerk deze opkomst" onclick="edititem(${el.id})" ${disabledAttr}>Edit</button>
-            </td>
-            <td class="tableitem">${el.date}</td>
-            <td class="tableitem">${el.organisatie}</td>
-            <td class="tableitem">${el.activity}</td>
-            <td class="tableitem">€${el.cost}</td>
-            <td class="tableitem">${el.notes}</td>
-            <td class="tableitem">${el.disabled}</td>
-        </tr>`;
-    });
-
-    table += `<tr class="tablerow"><td class="tableitem"><button class="addbutton" onclick="additem()">Toevoegen:</button></td><td class="tableitem"><input type="text" id="aDate" placeholder="Datum: x-xx-2023" required></td><td class="tableitem"><input type="text" id="aOrganisatie" placeholder="Organisatie"></td><td class="tableitem"><input type="text" id=aActivity placeholder="Activiteit" required></td><td class="tableitem"><input type="number" id=aCost placeholder="Kost" value=0 style="width: 50px;" required></td><td class="tableitem"><input type="text" id=aNotes placeholder="Notities"></td><td class="tableitem">Disabled: <input type="checkbox" id=aDisabled required></td></tr>`;
+    table += `<tr class="tablerow"><td class="tableitem"><button class="addbutton" onclick="additem()">Toevoegen:</button></td><td class="tableitem"><input type="text" class="addform" id="aDate" placeholder="Datum: x-xx-2023" required></td><td class="tableitem"><input type="text" class="addform" id="aOrganisatie" placeholder="Organisatie" required></td><td class="tableitem"><input type="text" class="addform" id=aActivity placeholder="Activiteit" required></td><td class="tableitem"><input type="number" class="addform" id=aCost placeholder="Kost" value=0 style="width: 50px;" required></td><td class="tableitem"><input type="text" class="addform" id=aNotes placeholder="Notities"></td><td class="tableitem">Disabled: <input type="checkbox" id=aDisabled required></td></tr>`;
 
     if (document.getElementById('planning')) {
         document.getElementById('planning').innerHTML = table;
@@ -127,8 +145,8 @@ function edititem(id) {
             <label for="eDisabled">Disabled:</label>
             <input type="checkbox" id="eDisabled" ${currentItem.disabled ? 'checked' : ''}><br>
 
-            <button type="submit" onclick="saveitem(${id})">Opslaan</button>
-            <button type="button" onclick="cancelEdit()">Annuleren</button>
+            <button type="submit" onclick="saveitem(${id})" class="savebutton">Opslaan</button>
+            <button type="button" onclick="cancelEdit()" class="cancelbutton">Annuleren</button>
         </form>
     `;
 
@@ -184,7 +202,7 @@ async function login() {
     await $.getJSON(url, function (result) {
         console.log(result);
         if(result.success === true) {
-            getTable();
+            getTable(result.role);
             document.getElementById('loginform').innerHTML = ``;
             document.getElementById('nav').innerHTML += `<button class="navitem" id="logout" onclick="logout()">Log uit</button>`;
         } else {
@@ -195,16 +213,17 @@ async function login() {
 
 function logout() {
     document.getElementById('planning').innerHTML = '';
-    document.getElementById('logout').innerHTML = `<div id="loginform" class="loginform">
-    <form>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        
-        
-    </form>
-    <button onclick="login()">Login</button>
+    document.getElementById('nav').innerHTML = `<button class="navitem" onclick="document.location.replace('#')">Home</button>
+    <div id="loginform" class="loginform">
+        <form>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br><br>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br><br>
+
+
+        </form>
+        <button onclick="login()">Login</button>
     </div>`;
 }
