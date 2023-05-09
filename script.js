@@ -1,4 +1,6 @@
 let planningarray;
+let userrole;
+
 function getTable(role) {
     $.getJSON('http://localhost/WalkingBranchAPI/server.php?fn=getPlanning', function (planning) {
         console.log(planning);
@@ -229,9 +231,8 @@ async function saveitem(id) {
 }
 
 function cancelEdit() {
-    setPlanning(planningarray);
+    setPlanning(planningarray, userrole);
 }
-
 
 async function login() {
     let username = document.getElementById('username').value;
@@ -241,6 +242,7 @@ async function login() {
         console.log(result);
         if (result.success === true) {
             getTable(result.role);
+            userrole = result.role;
             document.getElementById('loginform').classList.remove('loginform');
             document.getElementById('loginform').innerHTML = ``;
             document.getElementById('nav').innerHTML += 
