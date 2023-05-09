@@ -2,6 +2,7 @@
     background-color: black;
     color: white;
     transition: 0.3s;
+    font-family: tahoma;
 }
 
 .flex {
@@ -10,21 +11,27 @@
 
 .nav {
     background-color: #414446;
+    flex: 1;
+    padding: 10px 0 10px 10px;
 }
 
 .navitem {
-    height: 40px;
     border-radius: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: 10px;  
+    /* margin-top: 10px;
+    margin-bottom: 10px; */
+    margin-right: 10px;  
     border: solid 3px aqua;
+    padding: 8px 15px;
 }
 
 .navitem:hover {
     background-color: #545454;
+    cursor: pointer;
 }
 
+.loginout {
+    margin-left: auto;
+}
 .planning {
     border: 4px groove blue;
     border-collapse: collapse;
@@ -115,7 +122,7 @@
 
 .addform {
     height: 38px;
-    text-align: center;
+    text-align: center !important;
     border-radius: 10px;
 }
 
@@ -125,4 +132,16 @@
 
 .notes {
     width: 225px;
+}
+
+
+.loginform {
+    margin-left: 5px;
+    margin-right: 5px;
+    border: #0ff 3px solid;
+    padding: 10px;
+}
+
+#username, #password {
+    width: 125px;
 }

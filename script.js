@@ -31,14 +31,14 @@ function setPlanning(planning, role) {
             <b>Disabled</b>
         </td>
     </tr>`;
-    if(role === 'peasant') {
+    if (role === 'peasant') {
         planning.forEach(el => {
             const disabledAttr = el.disabled ? 'disabled class="diseditbutton"' : 'class="editbutton"'; // Add the disabled attribute if the disabled property is true
-            table += 
-            `
+            table +=
+                `
             <tr class="tablerow" id="e${el.id}">
                 <td class="tableitem">
-                    <button class="delbutton" title="Verwijder deze opkomst" onclick="delitem(${el.id})">Delete</button>
+                    <button title="Verwijder deze opkomst"  class="delbutton" onclick="delitem(${el.id})">Delete</button>
                     <button title="Bewerk deze opkomst" onclick="edititem(${el.id})" ${disabledAttr}>Edit</button>
                 </td>
                 <td class="tableitem">${el.date}</td>
@@ -49,10 +49,10 @@ function setPlanning(planning, role) {
                 <td class="tableitem">${el.disabled}</td>
             </tr>`;
         });
-    } else if(role === 'admin') {
+    } else if (role === 'admin') {
         planning.forEach(el => {
-            table += 
-            `
+            table +=
+                `
             <tr class="tablerow" id="e${el.id}">
                 <td class="tableitem">
                     <button class="delbutton" title="Verwijder deze opkomst" onclick="delitem(${el.id})">Delete</button>
@@ -71,7 +71,31 @@ function setPlanning(planning, role) {
         return;
     }
 
-    table += `<tr class="tablerow"><td class="tableitem"><button class="addbutton" onclick="additem()">Toevoegen:</button></td><td class="tableitem"><input type="text" class="addform" id="aDate" placeholder="Datum: x-xx-2023" required></td><td class="tableitem"><input type="text" class="addform" id="aOrganisatie" placeholder="Organisatie" required></td><td class="tableitem"><input type="text" class="addform" id=aActivity placeholder="Activiteit" required></td><td class="tableitem"><input type="number" class="addform" id=aCost placeholder="Kost" value=0 style="width: 50px;" required></td><td class="tableitem"><input type="text" class="addform" id=aNotes placeholder="Notities"></td><td class="tableitem">Disabled: <input type="checkbox" id=aDisabled required></td></tr>`;
+    table += 
+    `
+    <tr class="tablerow">
+        <td class="tableitem">
+            <button class="addbutton" onclick="additem()">Toevoegen:</button>
+        </td>
+        <td class="tableitem">
+            <input type="date" title="Datum" class="addform" id="aDate" placeholder="Datum: x-xx-2023" required>
+        </td>
+        <td class="tableitem">
+            <input type="text" title="Wie organiseert de opkomst" class="addform" id="aOrganisatie" placeholder="Organisatie" required>
+        </td>
+        <td class="tableitem">
+            <input type="text" title="Wat gaan we doen tijdens de opkomst" class="addform" id=aActivity placeholder="Activiteit" required>
+        </td>
+        <td class="tableitem">
+            <input type="number" title="Kosten" class="addform" id="aCost" value=0 style="width: 50px;" required>
+        </td>
+        <td class="tableitem">
+            <input type="text" title="Evt. notities" class="addform" id=aNotes placeholder="Notities">
+        </td>
+        <td class="tableitem" title="Mogen anderen bewerken">
+            Disabled: <input type="checkbox" id=aDisabled>
+        </td>
+    </tr>`;
 
     if (document.getElementById('planning')) {
         document.getElementById('planning').innerHTML = table;
@@ -94,6 +118,8 @@ function additem() {
     if (confirmation == true) {
         const id = planningarray.length + 1;
         const date = document.getElementById('aDate').value;
+        const splittedDate = date.split('-');
+        const formattedDate = `${splittedDate[2]}-${splittedDate[1]}-${splittedDate[0]}`
         const organisatie = document.getElementById('aOrganisatie').value;
         const activity = document.getElementById('aActivity').value;
         const cost = document.getElementById('aCost').value;
@@ -105,15 +131,19 @@ function additem() {
             dis = true;
         }
         if (date !== '' && organisatie !== '' && activity !== '' && cost !== '') {
-            $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=addItem&id=${id}&date=${date}&organisatie=${organisatie}&activity=${activity}&cost=${cost}&notes=${notes}&disabled=${dis}`, function (result) {
+            $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=addItem&id=${id}&date=${formattedDate}&organisatie=${organisatie}&activity=${activity}&cost=${cost}&notes=${notes}&disabled=${dis}`, function (result) {
                 console.log(result);
             });
-            // document.location.reload();
+            document.location.reload();
         } else {
-            alert('Vul alle velden in!');
             document.getElementById('aDate').style.border = '2px solid red';
             document.getElementById('aOrganisatie').style.border = '2px solid red';
             document.getElementById('aActivity').style.border = '2px solid red';
+            setTimeout(() => {
+                alert('Vul alle velden in!');
+            }, 500);
+
+
         }
     }
 }
@@ -122,7 +152,6 @@ function edititem(id) {
     const itemIndex = planningarray.findIndex(item => item.id === id);
     if (itemIndex === -1) {
         console.log(`Item with id ${id} not found.`);
-        return;
     }
 
     const currentItem = planningarray[itemIndex];
@@ -158,7 +187,7 @@ function edititem(id) {
     document.getElementById(`e${id}`).innerHTML = `<td colspan="7">${form}</td>`;
 }
 
-function saveitem(id) {
+async function saveitem(id) {
     const itemIndex = planningarray.findIndex(item => item.id === id);
     if (itemIndex === -1) {
         console.log(`Item with id ${id} not found.`);
@@ -166,13 +195,20 @@ function saveitem(id) {
     }
 
     const date = document.getElementById('eDate').value;
+    const splittedDate = date.split('-');
+    const formattedDate = `${splittedDate[2]}-${splittedDate[1]}-${splittedDate[0]}`
     const organisatie = document.getElementById('eOrganisatie').value;
     const activity = document.getElementById('eActivity').value;
     const cost = document.getElementById('eCost').value;
     const notes = document.getElementById('eNotes').value;
     const disabled = document.getElementById('eDisabled').checked;
-
-    if (date !== '' && activity !== '' && organisatie !== '') {
+    let dis;
+    if (disabled == true) {
+        dis = 0;
+    } else {
+        dis = 1;
+    }
+    if (date !== '' && activity !== '' && organisatie !== '' && cost !== '') {
         const updatedItem = {
             ...planningarray[itemIndex],
             date,
@@ -180,14 +216,13 @@ function saveitem(id) {
             activity,
             cost,
             notes,
-            disabled
+            dis
         };
         planningarray[itemIndex] = updatedItem;
-
-        $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=editItem&id=${id}&date=${date}&organisatie=${organisatie}&activity=${activity}&cost=${cost}&notes=${notes}&disabled=${disabled}`, function (result) {
+        $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=editItem&id=${id}&date=${encodeURIComponent(formattedDate)}&organisatie=${encodeURIComponent(organisatie)}&activity=${encodeURIComponent(activity)}&cost=${cost}&notes=${encodeURIComponent(notes)}&disabled=${dis}`, function (result) {
             console.log(result);
         });
-        setPlanning(planningarray);
+        document.location.reload();
     } else {
         alert('Vul alle velden in!');
     }
@@ -204,10 +239,14 @@ async function login() {
     const url = 'http://localhost/walkingBranchAPI/server.php?fn=login&username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
     await $.getJSON(url, function (result) {
         console.log(result);
-        if(result.success === true) {
+        if (result.success === true) {
             getTable(result.role);
+            document.getElementById('loginform').classList.remove('loginform');
             document.getElementById('loginform').innerHTML = ``;
-            document.getElementById('nav').innerHTML += `<button class="navitem" id="logout" onclick="logout()">Log uit</button>`;
+            document.getElementById('nav').innerHTML += 
+            `<div class="navitem" onclick="document.location.replace('#')">Home</div>
+            <div class="navitem loginout" id="logout" onclick="logout()">Log uit</div>
+            <div class="navitem">${result.username}</div>`;
         } else {
             alert('Invalid username/password!');
         }
@@ -216,7 +255,7 @@ async function login() {
 
 function logout() {
     document.getElementById('planning').innerHTML = '';
-    document.getElementById('nav').innerHTML = `<button class="navitem" onclick="document.location.replace('#')">Home</button>
+    document.getElementById('nav').innerHTML = `<div class="navitem" onclick="document.location.replace('#')">Home</div>
     <div id="loginform" class="loginform">
         <form>
             <label for="username">Username:</label>
@@ -227,6 +266,6 @@ function logout() {
 
 
         </form>
-        <button onclick="login()">Login</button>
+        <button onclick="login()" class="addbutton loginbutton">Login</button>
     </div>`;
 }
