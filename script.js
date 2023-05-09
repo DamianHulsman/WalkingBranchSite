@@ -8,6 +8,7 @@ function getTable(role) {
         setPlanning(planning, role);
     });
 }
+
 function setPlanning(planning, role) {
     let table = `
     <tr class="tableheader">
@@ -30,12 +31,12 @@ function setPlanning(planning, role) {
             <b>Notities</b>
         </td>
         <td class="tableitem">
-            <b>Disabled</b>
+            <b>Bewerkbaar</b>
         </td>
     </tr>`;
     if (role === 'peasant') {
         planning.forEach(el => {
-            const disabledAttr = el.disabled ? 'disabled class="diseditbutton"' : 'class="editbutton"'; // Add the disabled attribute if the disabled property is true
+            const disabledAttr = el.disabled ? 'class="editbutton"' : 'disabled class="diseditbutton"'; // Add the disabled attribute if the disabled property is true
             table +=
                 `
             <tr class="tablerow" id="e${el.id}">
@@ -121,7 +122,7 @@ function additem() {
         const id = planningarray.length + 1;
         const date = document.getElementById('aDate').value;
         const splittedDate = date.split('-');
-        const formattedDate = `${splittedDate[2]}-${splittedDate[1]}-${splittedDate[0]}`
+        const formattedDate = `${splittedDate[2]}-${splittedDate[1]}-${splittedDate[0]}`;
         const organisatie = document.getElementById('aOrganisatie').value;
         const activity = document.getElementById('aActivity').value;
         const cost = document.getElementById('aCost').value;
@@ -155,14 +156,21 @@ function edititem(id) {
     if (itemIndex === -1) {
         console.log(`Item with id ${id} not found.`);
     }
-
     const currentItem = planningarray[itemIndex];
+
+    console.log(currentItem);
+
+    const date = currentItem.date;
+    const [day, month, year] = date.split('-');
+    const formattedDate = `${year}-${month}-${day}`;
+    console.log('Normal: ' + currentItem.date);
+    console.log('Formatted: ' + formattedDate);
 
     // create an input form with the current values of the item
     const form = `
         <form>
             <label for="eDate">Datum:</label>
-            <input type="text" id="eDate" value="${currentItem.date}" required><br>
+            <input type="date" id="eDate" value="${formattedDate}" required><br>
 
             <label for="eOrganisatie">Organisatie:</label>
             <input type="text" id="eOrganisatie" value="${currentItem.organisatie}"><br>
@@ -221,8 +229,7 @@ async function saveitem(id) {
             dis
         };
         planningarray[itemIndex] = updatedItem;
-        $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=editItem&id=${id}&date=${encodeURIComponent(formattedDate)}&organisatie=${encodeURIComponent(organisatie)}&activity=${encodeURIComponent(activity)}&cost=${cost}&notes=${encodeURIComponent(notes)}&disabled=${dis}`, function (result) {
-            console.log(result);
+        $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=editItem&id=${id}&date=${encodeURIComponent(formattedDate)}&organisatie=${encodeURIComponent(organisatie)}&activity=${encodeURIComponent(activity)}&cost=${cost}&notes=${encodeURIComponent(notes)}&disabled=${disabled}`, function (result) {
         });
         document.location.reload();
     } else {
