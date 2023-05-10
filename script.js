@@ -1,15 +1,16 @@
 let planningarray;
 let userrole;
+let username;
 
-function getTable(role) {
+function getTable(role, username) {
     $.getJSON('http://localhost/WalkingBranchAPI/server.php?fn=getPlanning', function (planning) {
         console.log(planning);
         planningarray = planning;
-        setPlanning(planning, role);
+        setPlanning(planning, role, username);
     });
 }
 
-function setPlanning(planning, role) {
+function setPlanning(planning, role, username) {
     let table = `
     <tr class="tableheader">
         <td class="tableitem">
@@ -31,17 +32,25 @@ function setPlanning(planning, role) {
             <b>Notities</b>
         </td>
         <td class="tableitem">
-            <b>Bewerkbaar</b>
+            <b></b>
         </td>
     </tr>`;
     if (role === 'peasant') {
         planning.forEach(el => {
-            const disabledAttr = el.disabled ? 'class="editbutton"' : 'disabled class="diseditbutton"'; // Add the disabled attribute if the disabled property is true
+            let disabledAttr;
+            let toggledelete;
+            if(el.organisatie.includes(username) == true) {
+                disabledAttr = 'class="editbutton"';
+                toggledelete = 'class="delbutton"'; 
+            } else {
+                disabledAttr = 'disabled class="diseditbutton"'; // Add the disabled attribute if the disabled property is true
+                toggledelete = 'disabled class="diseditbutton"';
+            }
             table +=
                 `
             <tr class="tablerow" id="e${el.id}">
                 <td class="tableitem">
-                    <button title="Verwijder deze opkomst"  class="delbutton" onclick="delitem(${el.id})">Delete</button>
+                    <button title="Verwijder deze opkomst" onclick="delitem(${el.id})" ${toggledelete}>Delete</button>
                     <button title="Bewerk deze opkomst" onclick="edititem(${el.id})" ${disabledAttr}>Edit</button>
                 </td>
                 <td class="tableitem">${el.date}</td>
@@ -49,7 +58,6 @@ function setPlanning(planning, role) {
                 <td class="tableitem">${el.activity}</td>
                 <td class="tableitem">€${el.cost}</td>
                 <td class="tableitem">${el.notes}</td>
-                <td class="tableitem">${el.disabled}</td>
             </tr>`;
         });
     } else if (role === 'admin') {
@@ -66,7 +74,6 @@ function setPlanning(planning, role) {
                 <td class="tableitem">${el.activity}</td>
                 <td class="tableitem">€${el.cost}</td>
                 <td class="tableitem">${el.notes}</td>
-                <td class="tableitem">${el.disabled}</td>
             </tr>`;
         });
     } else {
@@ -87,16 +94,13 @@ function setPlanning(planning, role) {
             <input type="text" title="Wie organiseert de opkomst" class="addform" id="aOrganisatie" placeholder="Organisatie" required>
         </td>
         <td class="tableitem">
-            <input type="text" title="Wat gaan we doen tijdens de opkomst" class="addform" id=aActivity placeholder="Activiteit" required>
+            <input type="text" title="Korte omschrijving van het programma" class="addform" id=aActivity placeholder="Activiteit" required>
         </td>
         <td class="tableitem">
             <input type="number" title="Kosten" class="addform" id="aCost" value=0 style="width: 50px;" required>
         </td>
         <td class="tableitem">
             <input type="text" title="Evt. notities" class="addform" id=aNotes placeholder="Notities">
-        </td>
-        <td class="tableitem" title="Mogen anderen bewerken">
-            Disabled: <input type="checkbox" id=aDisabled>
         </td>
     </tr>`;
 
@@ -127,14 +131,9 @@ function additem() {
         const activity = document.getElementById('aActivity').value;
         const cost = document.getElementById('aCost').value;
         const notes = document.getElementById('aNotes').value;
-        let dis;
-        if (document.getElementById('aDisabled').value == true) {
-            dis = false;
-        } else {
-            dis = true;
-        }
+
         if (date !== '' && organisatie !== '' && activity !== '' && cost !== '') {
-            $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=addItem&id=${id}&date=${formattedDate}&organisatie=${organisatie}&activity=${activity}&cost=${cost}&notes=${notes}&disabled=${dis}`, function (result) {
+            $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=addItem&id=${id}&date=${formattedDate}&organisatie=${organisatie}&activity=${activity}&cost=${cost}&notes=${notes}&disabled=true`, function (result) {
                 console.log(result);
             });
             document.location.reload();
@@ -157,14 +156,9 @@ function edititem(id) {
         console.log(`Item with id ${id} not found.`);
     }
     const currentItem = planningarray[itemIndex];
-
-    console.log(currentItem);
-
     const date = currentItem.date;
     const [day, month, year] = date.split('-');
     const formattedDate = `${year}-${month}-${day}`;
-    console.log('Normal: ' + currentItem.date);
-    console.log('Formatted: ' + formattedDate);
 
     // create an input form with the current values of the item
     const form = `
@@ -179,21 +173,16 @@ function edititem(id) {
             <input type="text" id="eActivity" value="${currentItem.activity}" required><br>
 
             <label for="eCost">Kosten:</label>
-            <input type="number" id="eCost" value="${currentItem.cost}" style="width: 50px;" required><br>
+            <input type="number" id="eCost" value="${currentItem.cost}" style="width: 50px;"><br>
 
             <label for="eNotes">Notities:</label>
-            <input type="text" id="eNotes" value="${currentItem.notes}" required><br>
-
-            <label for="eDisabled">Disabled:</label>
-            <input type="checkbox" id="eDisabled" ${currentItem.disabled ? 'checked' : ''}><br>
-
+            <input type="text" id="eNotes" value="${currentItem.notes}"><br>
             <button type="submit" onclick="saveitem(${id})" class="savebutton">Opslaan</button>
             <button type="button" onclick="cancelEdit()" class="cancelbutton">Annuleren</button>
         </form>
     `;
 
     // replace the row with an input form
-    const table = document.getElementById('planning');
     document.getElementById(`e${id}`).innerHTML = `<td colspan="7">${form}</td>`;
 }
 
@@ -211,13 +200,8 @@ async function saveitem(id) {
     const activity = document.getElementById('eActivity').value;
     const cost = document.getElementById('eCost').value;
     const notes = document.getElementById('eNotes').value;
-    const disabled = document.getElementById('eDisabled').checked;
-    let dis;
-    if (disabled == true) {
-        dis = 0;
-    } else {
-        dis = 1;
-    }
+    const disabled = true;
+
     if (date !== '' && activity !== '' && organisatie !== '' && cost !== '') {
         const updatedItem = {
             ...planningarray[itemIndex],
@@ -226,10 +210,11 @@ async function saveitem(id) {
             activity,
             cost,
             notes,
-            dis
+            disabled
         };
         planningarray[itemIndex] = updatedItem;
         $.getJSON(`http://localhost/WalkingBranchAPI/server.php?fn=editItem&id=${id}&date=${encodeURIComponent(formattedDate)}&organisatie=${encodeURIComponent(organisatie)}&activity=${encodeURIComponent(activity)}&cost=${cost}&notes=${encodeURIComponent(notes)}&disabled=${disabled}`, function (result) {
+            console.log(result);
         });
         document.location.reload();
     } else {
@@ -248,7 +233,7 @@ async function login() {
     await $.getJSON(url, function (result) {
         console.log(result);
         if (result.success === true) {
-            getTable(result.role);
+            getTable(result.role, result.username);
             userrole = result.role;
             document.getElementById('loginform').classList.remove('loginform');
             document.getElementById('loginform').innerHTML = ``;
@@ -264,7 +249,8 @@ async function login() {
 
 function logout() {
     document.getElementById('planning').innerHTML = '';
-    document.getElementById('nav').innerHTML = `<div class="navitem" onclick="document.location.replace('#')">Home</div>
+    document.getElementById('nav').innerHTML = 
+    `
     <div id="loginform" class="loginform">
         <form>
             <label for="username">Username:</label>
