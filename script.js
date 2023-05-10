@@ -32,7 +32,6 @@ function setPlanning(planning, role, username) {
             <b>Notities</b>
         </td>
         <td class="tableitem">
-            <b></b>
         </td>
     </tr>`;
     if (role === 'peasant') {
@@ -238,7 +237,9 @@ async function login() {
             document.getElementById('loginform').classList.remove('loginform');
             document.getElementById('loginform').innerHTML = ``;
             document.getElementById('nav').innerHTML += 
-            `<div class="navitem" onclick="document.location.replace('#')">Home</div>
+            `<div class="navitem" onclick="document.location.replace('index.html')">Home</div>
+            <div class="navitem" onclick="document.location.replace('acties.html')">Acties</div>
+            <div class="navitem" onclick="document.location.replace('kampen.html')">Kampen</div>
             <div class="navitem loginout" id="logout" onclick="logout()">Log uit</div>
             <div class="navitem">${result.username}</div>`;
         } else {
