@@ -1,6 +1,8 @@
 let planningarray;
 let userrole;
 let username;
+const date = new Date();
+const fulldate = `${date.getDate()}-0${date.getMonth() + 1}-${date.getFullYear()}`;
 
 function getTable(role, username) {
     $.getJSON('http://localhost/WalkingBranchAPI/server.php?fn=getPlanning', function (planning) {
@@ -38,6 +40,11 @@ function setPlanning(planning, role, username) {
         planning.forEach(el => {
             let disabledAttr;
             let toggledelete;
+            let currentdate = '';
+            if(el.date == fulldate) {
+                currentdate = 'currentdate';
+            }
+
             if(el.organisatie.includes(username) == true) {
                 disabledAttr = 'class="editbutton"';
                 toggledelete = 'class="delbutton"'; 
@@ -52,7 +59,7 @@ function setPlanning(planning, role, username) {
                     <button title="Verwijder deze opkomst" onclick="delitem(${el.id})" ${toggledelete}>Delete</button>
                     <button title="Bewerk deze opkomst" onclick="edititem(${el.id})" ${disabledAttr}>Edit</button>
                 </td>
-                <td class="tableitem">${el.date}</td>
+                <td class="tableitem ${currentdate}">${el.date}</td>
                 <td class="tableitem">${el.organisatie}</td>
                 <td class="tableitem">${el.activity}</td>
                 <td class="tableitem">€${el.cost}</td>
@@ -61,6 +68,10 @@ function setPlanning(planning, role, username) {
         });
     } else if (role === 'admin') {
         planning.forEach(el => {
+            let currentdate = '';
+            if(el.date == fulldate) {
+                currentdate = 'currentdate';
+            }
             table +=
                 `
             <tr class="tablerow" id="e${el.id}">
@@ -68,7 +79,7 @@ function setPlanning(planning, role, username) {
                     <button class="delbutton" title="Verwijder deze opkomst" onclick="delitem(${el.id})">Delete</button>
                     <button title="Bewerk deze opkomst" onclick="edititem(${el.id})" class="editbutton">Edit</button>
                 </td>
-                <td class="tableitem">${el.date}</td>
+                <td class="tableitem ${currentdate}">${el.date}</td>
                 <td class="tableitem">${el.organisatie}</td>
                 <td class="tableitem">${el.activity}</td>
                 <td class="tableitem">€${el.cost}</td>
@@ -229,6 +240,7 @@ async function login() {
     let username = document.getElementById('username').value;
     let password = document.getElementById('password').value;
     const url = 'http://localhost/walkingBranchAPI/server.php?fn=login&username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
+
     await $.getJSON(url, function (result) {
         console.log(result);
         if (result.success === true) {
@@ -237,7 +249,7 @@ async function login() {
             document.getElementById('loginform').classList.remove('loginform');
             document.getElementById('loginform').innerHTML = ``;
             document.getElementById('nav').innerHTML += 
-            `<div class="navitem" onclick="document.location.replace('index.html')">Home</div>
+            `<div class="navitem" onclick="document.location.replace('index.html')">Planning</div>
             <div class="navitem" onclick="document.location.replace('acties.html')">Acties</div>
             <div class="navitem" onclick="document.location.replace('kampen.html')">Kampen</div>
             <div class="navitem loginout" id="logout" onclick="logout()">Log uit</div>

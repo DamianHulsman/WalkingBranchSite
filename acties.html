@@ -9,13 +9,15 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"
     integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" 
     crossorigin="anonymous"></script>
-    <script src="script.js"></script>
+    <script src="acties.js"></script>
     <title>Walking Branch</title>
 </head>
 
 <body>
-    <div class='titlediv'>
+    <div class='titlediv flex'>
+        <img src="./assets/scouting raalte logo.jpg" class="headerimg">
         <h1 class='title'>Walking Branch Planning Site</h1>
+        <img src="./assets/scouting raalte logo.jpg" class="headerimg">
     </div>
     <div class='nav flex' id="nav">
         <div id="loginform" class="loginform">
@@ -30,8 +32,14 @@
     </div>
     <div class="container">
         <div class="content">
-            <h2>Acties</h2>
-            Hier komen de acties te staan
+            <h2 class="pagetitle">Acties</h2>
+            <div class="flex transparent actieflexbox">
+            <table id="actietable">
+            </table>
+            <div id="myshifts">
+
+            </div>
+            </div>
         </div>
     </div>
 </body>
