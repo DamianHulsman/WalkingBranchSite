@@ -57,7 +57,7 @@ function editMyShifts() {
     <h4 style="text-align: center;">Mijn shifts</h4>
     <b><img src="./assets/hr.png"> = lijn</b><br>
     <b><img src="./assets/br.png"> = nieuwe regel</b><br>
-    <textarea id='editshiftinput' style="width: 300px !important; height: 200px !important;">${myshifts}</textarea><br>
+    <textarea id='editshiftinput' style="width: 300px !important; height: 200px !important; transition: 0s;">${myshifts}</textarea><br>
     <button onclick='saveshifts()' class='addbutton' style='width: fit-content; text-align: center;'>Opslaan</button>
     `;
 }

@@ -6,6 +6,7 @@
 
 .headerimg {
     height: 75px;
+    border-radius: 15px;
 }
 
 .content {
@@ -214,16 +215,15 @@
     padding: 10px;
 }
 
+.actieflexbox {
+    width: fit-content;
+}
 
 * {
     background-color: #000;
     color: white;
     transition: 0.3s;
     font-family: tahoma;
-}
-
-.actieflexbox {
-    width: fit-content;
 }
 
 ::-webkit-scrollbar {

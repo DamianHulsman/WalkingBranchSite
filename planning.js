@@ -53,7 +53,7 @@ function setPlanning(planning, role, username) {
                 toggledelete = 'disabled class="diseditbutton"';
             }
             table +=
-                `
+            `
             <tr class="tablerow" id="e${el.id}">
                 <td class="tableitem">
                     <button title="Verwijder deze opkomst" onclick="delitem(${el.id})" ${toggledelete}>Delete</button>
@@ -95,7 +95,7 @@ function setPlanning(planning, role, username) {
     `
     <tr class="tablerow">
         <td class="tableitem">
-            <button class="addbutton" onclick="additem()">Toevoegen:</button>
+            <button class="addbutton" title="Opkomst toevoegen" onclick="additem()">Toevoegen:</button>
         </td>
         <td class="tableitem">
             <input type="date" title="Datum" class="addform" id="aDate" placeholder="Datum: x-xx-2023" required>
