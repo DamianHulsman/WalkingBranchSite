@@ -43,8 +43,8 @@ async function getTable(userdata) {
                 kampentable += `
                 <tr class='kampenitem' id='el${el.id}'>
                     <td>
-                        <button ${role} onclick="deleteKamp(${el.id})">Delete</button>
-                        <button ${role2} onclick="editKamp(${el.id})">Edit</button>
+                        <button ${role} onclick="deleteKamp(${el.id})" title="Verwijder dit kamp">Delete</button>
+                        <button ${role2} onclick="editKamp(${el.id})" title="Bewerk dit kamp">Edit</button>
                     </td>
                     <td>${el.name}</td>
                     <td>${el.start}</td>
@@ -75,7 +75,6 @@ async function addKamp() {
     const formattedDate2 = `${year2}-${month2}-${day2}`;
     if(name !== '' && sdate !== '' && edate !== '') {
         $.getJSON(`http://localhost/walkingbranchAPI/server.php?fn=addKamp&id=${response + 1}&name=${name}&start=${formattedDate1}&end=${formattedDate2}`, function (result) {
-            console.log(result);
             document.location.reload();
         });
     } else {
@@ -84,7 +83,6 @@ async function addKamp() {
 }
 
 async function editKamp(id) {
-    console.log(`id`, id);
     await $.getJSON(`http://localhost/walkingbranchAPI/server.php?fn=getKamp&id=${id}`, function (result) {
         const el = result[0];
         console.log(result);
